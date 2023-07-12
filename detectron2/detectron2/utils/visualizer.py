@@ -448,9 +448,13 @@ class Visualizer:
         """
         if isinstance(sem_seg, torch.Tensor):
             sem_seg = sem_seg.numpy()
+        #去除其中重复的元素,labels为去重后的像素值,areas为各种像素值的重复次数
         labels, areas = np.unique(sem_seg, return_counts=True)
+        #返回areas按降序排序后，索引值的数组
         sorted_idxs = np.argsort(-areas).tolist()
+        #到这里的目的是，为了让labels数组实现，按像素值重复次数降序排序
         labels = labels[sorted_idxs]
+        #这里的目的是，过滤掉labels数组中的像素值大于语义分割种类数目的值
         for label in filter(lambda l: l < len(self.metadata.stuff_classes), labels):
             try:
                 mask_color = [x / 255 for x in self.metadata.stuff_colors[label]]

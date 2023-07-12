@@ -53,8 +53,8 @@ def get_slide_dicts_semantic(img_dir,sem_mask_dir):
         record["image_id"] = idx
         record["height"] = height
         record["width"] = width
-        maks_file = os.path.join(sem_mask_dir, img_file_names[idx])
-        record["sem_seg_file_name"] = maks_file
+        mask_file = os.path.join(sem_mask_dir, img_file_names[idx])
+        record["sem_seg_file_name"] = mask_file
         dataset_dicts.append(record)
     return dataset_dicts
 
