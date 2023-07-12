@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 import random
 
-def get_slide_dicts(img_dir,annotation_dir):
+def get_slide_dicts_instance(img_dir,annotation_dir):
     dataset_dicts = []
     json_file_names= os.listdir(annotation_dir) #得到anns文件夹下的所有json文件名称
     for idx in range(len(json_file_names)):
@@ -42,16 +42,32 @@ def get_slide_dicts(img_dir,annotation_dir):
         dataset_dicts.append(record)
     return dataset_dicts
 
-# for d in ['train']:
-#     DatasetCatalog.register("slide_"+d, lambda d=d: get_slide_dicts("../../samples/image","../../samples/annotation"))
-#     MetadataCatalog.get("slide_"+d).set(things_classes=["slide"])
+def get_slide_dicts_semantic(img_dir,sem_mask_dir):
+    dataset_dicts = []
+    img_file_names= os.listdir(img_dir) #得到img文件夹下的所有图片名称
+    for idx in range(len(img_file_names)):
+        record = {}
+        img_file = os.path.join(img_dir, img_file_names[idx])
+        height, width = cv2.imread(img_file).shape[:2]
+        record["file_name"] = img_file
+        record["image_id"] = idx
+        record["height"] = height
+        record["width"] = width
+        maks_file = os.path.join(sem_mask_dir, img_file_names[idx])
+        record["sem_seg_file_name"] = maks_file
+        dataset_dicts.append(record)
+    return dataset_dicts
+
+for d in ['train']:
+    DatasetCatalog.register("slide_"+d, lambda d=d: get_slide_dicts("../../samples/image","../../samples/annotation"))
+    MetadataCatalog.get("slide_"+d).set(things_classes=["slide"])
 
 slide_metadata = MetadataCatalog.get("slide_train")
 
-dataset_dicts = get_slide_dicts("../../samples/image","../../samples/annotation")
-for d in random.sample(dataset_dicts, 1):
-    img = cv2.imread(d["file_name"])
-    visualizer = Visualizer(img[:, :, ::-1], metadata=slide_metadata, scale=0.5)
-    out = visualizer.draw_dSataset_dict(d)
-    cv2.imshow('slide',out.get_image()[:, :, ::-1])
-    cv2.waitKey(0)
+# dataset_dicts = get_slide_dicts("../../samples/image","../../samples/annotation")
+# for d in random.sample(dataset_dicts, 1):
+#     img = cv2.imread(d["file_name"])
+#     visualizer = Visualizer(img[:, :, ::-1], metadata=slide_metadata, scale=0.5)
+#     out = visualizer.draw_dataset_dict(d)
+#     cv2.imshow('slide',out.get_image()[:, :, ::-1])
+#     cv2.waitKey(0)
