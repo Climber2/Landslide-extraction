@@ -1,2 +1,0 @@
-# Landslide-extraction
-fuck
